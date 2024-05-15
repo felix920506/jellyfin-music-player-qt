@@ -5,9 +5,13 @@ from loginform import loginForm
 
 app = QApplication(sys.argv)
 
-window = QStackedWidget()
-window.addWidget(loginForm())
-window.setCurrentIndex(0)
+window = QMainWindow()
+
+mainWidget = QStackedWidget()
+mainWidget.addWidget(loginForm())
+mainWidget.setCurrentIndex(0)
+
+window.setCentralWidget(mainWidget)
 window.show()
 
 app.exec()
