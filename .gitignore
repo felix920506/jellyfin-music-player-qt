@@ -235,3 +235,4 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 # Project Specific Files
+/data

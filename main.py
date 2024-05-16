@@ -11,6 +11,7 @@ mainWidget = QStackedWidget()
 mainWidget.addWidget(loginForm())
 mainWidget.setCurrentIndex(0)
 
+mainWidget.addWidget(PlaceholderWidget())
 window.setCentralWidget(mainWidget)
 window.show()
 

@@ -1,9 +1,11 @@
-import aiohttp
 import platform
 import json
-from internationalization import translate
+import requests
 from typing import Literal
 
+
+# Global request Timeout Option in seconds, leaving it here for now but may make it into a setting in the future
+TIMEOUT = 5
 
 # TODO: Refactor to read from external file
 VERSION = '0.0.1'
@@ -32,38 +34,40 @@ else:
         _token = auth['token']
 
 
-async def loginUsername(server: str, username: str, password: str) -> Literal['Success', 'BadCredentials', 'UnknownError', 'InvalidCredentials']:
-    server.strip('/')
-    async with aiohttp.ClientSession(headers=buildHeader()) as session:
-        body = {
-            'Username': username,
-            'Pw': password
-        }
-        try:
-            async with session.post(f'{server}/Users/AuthenticateByName', json=body) as auth:
-                global serverIp
-                serverIp = server
-                if auth.status == 200:
-                    body = json.loads(await auth.text())
-                    global _token
-                    _token = body['AccessToken']
-                    with open('./data/auth.json', 'w', encoding='utf8') as authFile:
-                        data = {
-                            'serverIp': server,
-                            'token': _token
-                        }
-                        json.dump(data, authFile)
-                    return "Success"
-                elif auth.status == 401:
-                    return "BadCredentials"
-                else:
-                    return "UnknownError"
-        except aiohttp.client_exceptions.InvalidURL:
-            return "InvalidUrl"
+def loginUsername(server: str, username: str, password: str) -> Literal['Success', 'BadCredentials', 'UnknownError', 'InvalidUrl']:
+    if not server.startswith('http'):
+        server = 'http://' + server
 
+    try:
+        res = requests.post(f'{server}/Users/AuthenticateByName', headers=buildHeader(), timeout=TIMEOUT, json={
+                'Username': username,
+                'Pw': password
+            }
+        )
+    except requests.exceptions.ConnectTimeout:
+        return 'UnknownError'
+    except requests.exceptions.InvalidURL:
+        return 'InvalidUrl'
 
-async def loginQuickConnect(server: str, code: str):
-    pass
+    # print(res)
+    match res.status_code:
+        case 200:
+            global serverIp, _token
+            serverIp = server
+            _token = res.json()['AccessToken']
+            with open('./data/auth.json', 'w', encoding='utf8') as authFile:
+                body = json.dumps({
+                        'serverIp': serverIp,
+                        'token': _token
+                })
+                authFile.write(body)
+            return 'Success'
+        case 401:
+            return 'BadCredentials'
+        case 404:
+            return 'InvalidUrl'
+        case _:
+            return 'UnknownError'
 
 
 def buildHeader():
@@ -74,42 +78,3 @@ def buildHeader():
         headers["Authorization"] += f', Token="{_token}"'
 
     return headers
-
-
-def hasToken():
-    if _token:
-        return True
-    else:
-        return False
-
-
-def invalidateToken():
-    global _token
-    _token = ''
-
-
-async def requestMaker(reqtype: Literal["GET", "POST"], endpoint: str, params: str = None, payload: dict = None):
-    async with aiohttp.ClientSession(headers=buildHeader()) as session:
-        url = f'{serverIp}/{endpoint}'
-        if params:
-            url = f'{url}?{params}'
-
-        try:
-            match reqtype:
-                case 'GET':
-                    resp = await session.get(url, json=payload)
-
-                case 'POST':
-                    resp = await session.post(url, json=payload)
-
-            if resp.status == 200:
-                res = await resp.json()
-                return res
-            else:
-                if resp.status == 401:
-                    invalidateToken()
-                    raise IOError
-
-
-        except:
-            raise IOError

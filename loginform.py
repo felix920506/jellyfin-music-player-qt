@@ -1,7 +1,12 @@
 from PyQt6.QtWidgets import (QWidget, QPushButton, QLabel, QLineEdit, QFormLayout,
                              QStackedWidget, QCheckBox, QSizePolicy)
+from PyQt6.QtCore import QThread, pyqtSignal, QObject
 from internationalization import translate
 import sessioncontroller
+import popupmessage
+
+
+resArea: str
 
 
 class loginForm(QStackedWidget):
@@ -13,8 +18,13 @@ class loginForm(QStackedWidget):
 
 
 class loginFormNormal(QWidget):
+
+    loginCompleteSignal = pyqtSignal(str)
+
     def __init__(self):
         super(loginFormNormal, self).__init__()
+
+        self.workerThread: QThread | None = None
 
         layout = QFormLayout()
         layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
@@ -43,25 +53,62 @@ class loginFormNormal(QWidget):
         # QCButton.clicked.connect(lambda: self.parent().setCurrentIndex(1))
         # layout.addRow(QCButton)
 
-        loginButton = QPushButton(translate('loginConnectAndLogin'))
-        layout.addRow(loginButton)
+        self.loginButton = QPushButton(translate('loginConnectAndLogin'))
+        self.loginButton.clicked.connect(self.login)
+        layout.addRow(self.loginButton)
+
+        testButton = QPushButton('Test')
+        testButton.clicked.connect(
+            lambda: popupmessage.warningMessageBox('Test', 'Test Message').exec()
+        )
+        layout.addRow(testButton)
 
         self.setLayout(layout)
 
     def login(self):
+
+        self.loginButton.setEnabled(False)
+
         server = self.serverField.text()
         user = self.userField.text()
         password = self.passwordField.text()
 
-        res = sessioncontroller.loginUsername(server, user, password)
+        self.workerThread = loginThread(server, user, password)
+        self.workerThread.start()
+        self.workerThread.finished.connect(self.handleLoginRes)
+
+    def handleLoginRes(self, res: str):
         match res:
             case 'Success':
-                pass
+                self.parent().parent().setCurrentIndex(1)
             case 'BadCredentials':
-                pass
+                popupmessage.warningMessageBox(translate('loginBadCredentials'), res).exec()
             case 'UnknownError':
-                pass
-            case 'InvalidCredentials':
-                pass
+                popupmessage.warningMessageBox(translate('loginUnknownError'), res).exec()
+            case 'InvalidUrl':
+                popupmessage.warningMessageBox(translate('loginInvalidUrl'), res).exec()
+
+        self.loginButton.setEnabled(True)
+
+class loginThread(QThread):
+    finished = pyqtSignal(str)
+
+    def __init__(self, server: str, user: str, password: str):
+        super().__init__()
+        self.server = server
+        self.user = user
+        self.password = password
+
+        # self.finished.connect(self.quit)
+        # self.finished.connect(self.deleteLater)
+
+    def run(self):
+        # global resArea
+        self.finished.emit(
+            sessioncontroller.loginUsername(self.server, self.user, self.password)
+        )
+        self.quit()
+        self.deleteLater()
+
 
 
