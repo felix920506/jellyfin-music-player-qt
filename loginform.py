@@ -100,9 +100,6 @@ class loginThread(QThread):
         self.user = user
         self.password = password
 
-        # self.finished.connect(self.quit)
-        # self.finished.connect(self.deleteLater)
-
     def run(self):
         # global resArea
         self.finished.emit(
