@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QStackedWidget, QLabel
 # Custom Widgets
 from placeholderwidget import PlaceholderWidget
 from loginform import loginForm
+from mainwidget import mainUIWidget
 
 # Other things
 import sessioncontroller
@@ -18,6 +19,8 @@ window = QMainWindow()
 mainWidget = QStackedWidget()
 mainWidget.addWidget(loginForm())
 mainWidget.setCurrentIndex(0)
+
+mainWidget.addWidget(mainUIWidget())
 
 mainWidget.addWidget(PlaceholderWidget())
 
