@@ -2,6 +2,7 @@ import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QStackedWidget, QLabel
 from placeholderwidget import PlaceholderWidget
 from loginform import loginForm
+import sessioncontroller
 
 app = QApplication(sys.argv)
 
@@ -12,6 +13,10 @@ mainWidget.addWidget(loginForm())
 mainWidget.setCurrentIndex(0)
 
 mainWidget.addWidget(PlaceholderWidget())
+
+if sessioncontroller.validateCurrentSession():
+    mainWidget.setCurrentIndex(1)
+
 window.setCentralWidget(mainWidget)
 window.show()
 

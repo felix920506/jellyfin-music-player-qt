@@ -35,6 +35,7 @@ else:
 
 
 def loginUsername(server: str, username: str, password: str) -> Literal['Success', 'BadCredentials', 'UnknownError', 'InvalidUrl']:
+    server = server.strip('/')
     if not server.startswith('http'):
         server = 'http://' + server
 
@@ -78,3 +79,12 @@ def buildHeader():
         headers["Authorization"] += f', Token="{_token}"'
 
     return headers
+
+
+def validateCurrentSession():
+    try:
+        res = requests.get(f'{serverIp}/Users/Me', headers=buildHeader(), timeout=TIMEOUT)
+        return res.status_code == 200
+    except:
+        return False
+

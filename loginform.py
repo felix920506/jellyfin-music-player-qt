@@ -90,6 +90,7 @@ class loginFormNormal(QWidget):
 
         self.loginButton.setEnabled(True)
 
+
 class loginThread(QThread):
     finished = pyqtSignal(str)
 
