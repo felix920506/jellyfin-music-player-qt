@@ -2,6 +2,7 @@ import platform
 import json
 import requests
 from typing import Literal
+import os
 
 
 # Global request Timeout Option in seconds, leaving it here for now but may make it into a setting in the future
@@ -56,13 +57,19 @@ def loginUsername(server: str, username: str, password: str) -> Literal['Success
             global serverIp, _token
             serverIp = server
             _token = res.json()['AccessToken']
-            with open('./data/auth.json', 'w', encoding='utf8') as authFile:
-                body = json.dumps({
-                        'serverIp': serverIp,
-                        'token': _token
-                })
-                authFile.write(body)
-            return 'Success'
+            try:
+                if not os.path.exists('./data'):
+                    os.mkdir('./data')
+                with open('./data/auth.json', 'w', encoding='utf8') as authFile:
+                    body = json.dumps({
+                            'serverIp': serverIp,
+                            'token': _token
+                    })
+                    authFile.write(body)
+                return 'Success'
+            except:
+                pass
+
         case 401:
             return 'BadCredentials'
         case 404:
