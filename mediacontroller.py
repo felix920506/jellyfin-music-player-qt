@@ -7,16 +7,32 @@ def getLatest() -> list:
 
 
 def getLibs() -> list:
-    pass
-
-
-def getLibAlbums(id: str) -> list:
     res = sessioncontroller.get('UserViews')
+    reslist = []
+    try:
+        for item in res.json()['items']:
+            entry = {
+                'Id': item['Id'],
+                'Name': item['Name'],
+                'Image': getImageUrl(item['Id'])
+            }
+            reslist.append(entry)
+
+    except:
+        reslist = []
+
+    return reslist
+
+def getLibAlbums(ItemId: str) -> list:
 
 
-def getAlbumInfo(id: str) -> dict:
+def getAlbumInfo(ItemId: str) -> dict:
     pass
 
 
-def getTrackInfo(id: str) -> dict:
+def getTrackInfo(ItemId: str) -> dict:
+    pass
+
+
+def getImageUrl(ItemId: str) -> str:
     pass
