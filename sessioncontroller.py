@@ -95,3 +95,13 @@ def validateCurrentSession():
     except:
         return False
 
+
+def get(endpoint: str, params: dict = None, rjson: dict = None) -> requests.models.Response:
+    endpoint = endpoint.strip('/')
+    return requests.get(f'{serverIp}/{endpoint}', params=params, json=rjson, headers=buildHeader(), timeout=TIMEOUT)
+
+
+def post(endpoint: str, params: dict = None, rjson: dict = None) -> requests.models.Response:
+    endpoint = endpoint.strip('/')
+    return requests.post(f'{serverIp}/{endpoint}', params=params, json=rjson, headers=buildHeader(), timeout=TIMEOUT)
+
