@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout
 from playerwidget import PlayerWidget
 from placeholderwidget import PlaceholderWidget
+from libviewwidget import LibViewWidget
 
 
 class mainUIWidget(QWidget):
@@ -9,8 +10,7 @@ class mainUIWidget(QWidget):
 
         layout = QVBoxLayout()
 
-        layout.addWidget(PlaceholderWidget())
-        layout.addWidget(PlaceholderWidget())
+        layout.addWidget(LibViewWidget())
         layout.addWidget(PlayerWidget())
 
         self.setLayout(layout)
