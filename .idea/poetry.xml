@@ -4,6 +4,7 @@
     <option name="poetryVirtualenvPaths">
       <set>
         <option value="$USER_HOME$/.cache/pypoetry/virtualenvs/jellyfin-music-player-qt-nxK_HnUH-py3.10/bin/python" />
+        <option value="$USER_HOME$/Library/Caches/pypoetry/virtualenvs/jellyfin-music-player-qt-i7Nsaer1-py3.12/bin/python" />
       </set>
     </option>
   </component>

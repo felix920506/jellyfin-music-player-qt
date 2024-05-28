@@ -3,7 +3,8 @@ import sessioncontroller
 
 
 def getLatest() -> list:
-    pass
+    res = sessioncontroller.get(f'Items/Latest?includeItemTypes=MusicAlbum')
+    return res.json()
 
 
 def getLibs() -> list:
@@ -23,16 +24,21 @@ def getLibs() -> list:
 
     return reslist
 
+
 def getLibAlbums(ItemId: str) -> list:
+    res = sessioncontroller.get(f'Items?parentId={ItemId}&recursive=true&includeItemTypes=MusicAlbum')
+    return res.json()['Items']
 
 
-def getAlbumInfo(ItemId: str) -> dict:
-    pass
+def getItemDetails(ItemId: str) -> dict:
+    res = sessioncontroller.get(f'Items/{ItemId}')
+    return res.json()
 
 
-def getTrackInfo(ItemId: str) -> dict:
-    pass
+def getAlbumTracks(AlbumId: str) -> list:
+    res = sessioncontroller.get(f'Items?parentId={AlbumId}')
+    return res.json()
 
 
 def getImageUrl(ItemId: str) -> str:
-    pass
+    return f'{sessioncontroller.serverIp}/Items/{ItemId}/Images/Primary/0'
