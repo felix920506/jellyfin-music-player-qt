@@ -12,12 +12,13 @@ def getLibs() -> list:
     reslist = []
     try:
         for item in res.json()['items']:
-            entry = {
-                'Id': item['Id'],
-                'Name': item['Name'],
-                'Image': getImageUrl(item['Id'])
-            }
-            reslist.append(entry)
+            if item['ConnectionType'] == 'music':
+                entry = {
+                    'Id': item['Id'],
+                    'Name': item['Name'],
+                    'Image': getImageUrl(item['Id'])
+                }
+                reslist.append(entry)
 
     except:
         reslist = []
