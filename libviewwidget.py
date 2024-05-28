@@ -10,3 +10,4 @@ class LibViewWidget(QWidget):
         layout.addWidget(PlaceholderWidget())
         layout.addWidget(PlaceholderWidget())
         self.setLayout(layout)
+        
