@@ -1,13 +1,14 @@
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QScrollArea
 from placeholderwidget import PlaceholderWidget
 from libviewmainwidget import LibViewMainWidget
 
 
-class LibViewWidget(QWidget):
+class LibViewWidget(QScrollArea):
     def __init__(self):
         super().__init__()
 
-        layout = QHBoxLayout()
-        layout.addWidget(PlaceholderWidget())
-        layout.addWidget(LibViewMainWidget())
-        self.setLayout(layout)
+        # layout.addWidget(PlaceholderWidget())
+        # layout.addWidget(LibViewMainWidget())
+        # self.setLayout(layout)
+        self.setWidgetResizable(True)
+        self.setWidget(LibViewMainWidget())

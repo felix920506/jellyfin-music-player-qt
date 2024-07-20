@@ -4,12 +4,15 @@ from PyQt6.QtGui import QPixmap
 
 
 class PixmapFromHttp(QPixmap):
-    def __init__(self, url: str = None) -> None:
+    def __init__(self, url: str = None, synchronous=False) -> None:
         self.url: str | None = None
         self.workerThread: getImageThread | None = None
         super().__init__()
 
-        self.setImageFromUrl(url)
+        if synchronous:
+            self.setImageFromUrlSynchronous(url)
+        else:
+            self.setImageFromUrl(url)
 
     def setImageFromUrl(self, url: str) -> None:
         if url is None:
@@ -19,6 +22,12 @@ class PixmapFromHttp(QPixmap):
         self.workerThread = getImageThread(url)
         self.workerThread.start()
         self.workerThread.finished.connect(self.loadFromData)
+
+    def setImageFromUrlSynchronous(self, url: str) -> None:
+        if url is None:
+            return
+        res = requests.get(url)
+        self.loadFromData(res.content)
 
 
 class getImageThread(QThread):

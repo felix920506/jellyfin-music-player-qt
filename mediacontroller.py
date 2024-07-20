@@ -3,7 +3,7 @@ import sessioncontroller
 
 
 def getLatest() -> list:
-    res = sessioncontroller.get(f'Items/Latest?includeItemTypes=MusicAlbum')
+    res = sessioncontroller.get(f'Items/Latest', {"includeItemTypes": "MusicAlbum", "limit": 10})
     return res.json()
 
 
